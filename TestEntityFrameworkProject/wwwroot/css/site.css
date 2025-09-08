@@ -1,50 +1,62 @@
-html {
+html 
+{
   font-size: 14px;
 }
 
-@media (min-width: 768px) {
-  html {
+@media (min-width: 768px) 
+{
+  html 
+  {
     font-size: 16px;
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus 
+{
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
+html 
+{
   position: relative;
   min-height: 100%;
 }
 
-body {
+body 
+{
   margin-bottom: 60px;
 }
 /* Цветные иконки */
-.icon-primary {
+.icon-primary 
+{
     color: #0d6efd; /* Синий */
 }
 
-.icon-danger {
+.icon-danger 
+{
     color: #dc3545; /* Красный */
 }
 
-    /* Анимация при наведении */
-    .icon-primary:hover,
-    .icon-danger:hover {
-        transform: scale(1.2);
-        transition: transform 0.2s, color 0.2s;
-    }
+/* Анимация при наведении */
+.icon-primary:hover,
+.icon-danger:hover 
+{     
+    transform: scale(1.2);
+    transition: transform 0.2s, color 0.2s;
+}
 
-.icon-primary:hover {
+.icon-primary:hover 
+{
     color: #0a58ca; /* Темнее при наведении */
 }
 
-.icon-danger:hover {
+.icon-danger:hover 
+{
     color: #b02a37; /* Темнее при наведении */
 }
 
-.rounded-search {
+.rounded-search 
+{
     border-radius: 50px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -52,7 +64,21 @@ body {
     transition: box-shadow 0.3s, border-color 0.3s;
 }
 
-    .rounded-search:focus {
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-        border-color: #0d6efd;
-    }
+.rounded-search:focus 
+{   
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    border-color: #0d6efd;
+}
+
+/* Стиль для ссылок в заголовках таблицы */
+.table thead th a 
+{
+    color: #212529; /* Чёрный цвет (стандартный для текста Bootstrap) */
+    text-decoration: none; /* Убираем подчёркивание */
+}
+
+.table thead th a:hover 
+{     
+    color: #0d6efd; /* Синий при наведении — для обратной связи */ 
+    text-decoration: underline; /* Подчёркиваем при наведении */
+}

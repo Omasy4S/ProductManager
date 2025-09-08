@@ -76,10 +76,52 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Название</th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sort="@(ViewBag.CurrentSort == "name_asc" ? "name_desc" : "name_asc")"
+                   asp-route-searchString="@ViewData["CurrentFilter"]">
+                    Название
+                    @if (ViewBag.CurrentSort == "name_asc")
+                    {
+                        <span>▲</span>
+                    }
+                    @if (ViewBag.CurrentSort == "name_desc")
+                    {
+                        <span>▼</span>
+                    }
+                </a>
+            </th>
             <th>Описание</th>
-            <th>Цена</th>
-            <th>Добавлен</th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sort="@(ViewBag.CurrentSort == "price_asc" ? "price_desc" : "price_asc")"
+                   asp-route-searchString="@ViewData["CurrentFilter"]">
+                    Цена
+                    @if (ViewBag.CurrentSort == "price_asc")
+                    {
+                        <span>▲</span>
+                    }
+                    @if (ViewBag.CurrentSort == "price_desc")
+                    {
+                        <span>▼</span>
+                    }
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sort="@(ViewBag.CurrentSort == "date_asc" ? "date_desc" : "date_asc")"
+                   asp-route-searchString="@ViewData["CurrentFilter"]">
+                    Добавлен
+                    @if (ViewBag.CurrentSort == "date_asc")
+                    {
+                        <span>▲</span>
+                    }
+                    @if (ViewBag.CurrentSort == "date_desc")
+                    {
+                        <span>▼</span>
+                    }
+                </a>
+            </th>
             <th>Действия</th>
         </tr>
     </thead>

@@ -13,7 +13,7 @@ namespace TestEntityFrameworkProject.Controllers
             context = Сontext;
         }
 
-        public IActionResult Index(string searchString)
+        public IActionResult Index(string searchString, string sort)
         {
             var query = context.Products.ToList();
 
@@ -23,6 +23,30 @@ namespace TestEntityFrameworkProject.Controllers
                 query = query.Where(p => p.Name.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
                                          p.Description.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
                 ViewData["CurrentFilter"] = searchString; // Передаём значение обратно в View
+            }
+            
+            // 🔄 Сортировка
+            ViewBag.CurrentSort = sort;
+            switch (sort)
+            {
+                case "name_desc":
+                    query = query.OrderByDescending(p => p.Name).ToList();
+                    break;
+                case "price_asc":
+                    query = query.OrderBy(p => p.Price).ToList();
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(p => p.Price).ToList();
+                    break;
+                case "date_asc":
+                    query = query.OrderBy(p => p.CreatedAt).ToList();
+                    break;
+                case "date_desc":
+                    query = query.OrderByDescending(p => p.CreatedAt).ToList();
+                    break;
+                default: // name_asc
+                    query = query.OrderBy(p => p.Name).ToList();
+                    break;
             }
 
             var products = query.ToList();
