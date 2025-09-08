@@ -1,0 +1,104 @@
+﻿@model IEnumerable<TestEntityFrameworkProject.Models.Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- 📊 Блок статистики -->
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">📦 Всего товаров</h5>
+                <h2 class="card-text">@ViewBag.Stats.TotalCount</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">💰 Средняя цена</h5>
+                <h2 class="card-text">@ViewBag.Stats.AveragePrice.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">📈 Самый дорогой</h5>
+                <p class="card-text mb-1">@ViewBag.Stats.MostExpensiveName</p>
+                <h4>@ViewBag.Stats.MostExpensivePrice.ToString("C")</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+            <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">📉 Самый дешёвый</h5>
+                <p class="card-text mb-1">@ViewBag.Stats.CheapestName</p>
+                <h4>@ViewBag.Stats.CheapestPrice.ToString("C")</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Последний добавленный товар -->
+<div class="alert alert-info mb-4">
+    <strong>🕒 Последний добавленный товар:</strong> @ViewBag.Stats.LatestProductName
+    <br />
+    <small>Добавлен: @ViewBag.Stats.LatestProductDate.ToString("g")</small>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📦 Список продуктов</h2>
+    <a asp-action="Create" class="btn btn-success">Добавить новый</a>
+</div>
+
+<!-- 🔍 Круглая поисковая строка -->
+<form asp-action="Index" method="get" class="mb-4 d-flex align-items-center">
+    <input type="text"
+           name="searchString"
+           value="@ViewData["CurrentFilter"]"
+           class="form-control me-2"
+           placeholder="Поиск по названию..."
+           style="border-radius: 50px; padding-left: 20px; padding-right: 20px; height: 40px; border: 1px solid #ced4da;" />
+
+    <!-- Кнопка поиска -->
+    <button type="submit" class="btn btn-outline-secondary btn-sm" title="Поиск" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d6efd;">
+        <i class="bi bi-search"></i>
+    </button>
+
+    <!-- Кнопка сброса -->
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm ms-2" title="Сбросить фильтр" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #dc3545;">
+        <i class="bi bi-x-circle"></i>
+    </a>
+</form> 
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Добавлен</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.Price?.ToString("C")</td>
+                <td>@item.CreatedAt.ToString("g")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Редактировать</a>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить?')">🗑️ Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

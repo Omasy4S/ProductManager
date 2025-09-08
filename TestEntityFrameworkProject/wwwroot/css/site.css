@@ -1,0 +1,58 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+/* Цветные иконки */
+.icon-primary {
+    color: #0d6efd; /* Синий */
+}
+
+.icon-danger {
+    color: #dc3545; /* Красный */
+}
+
+    /* Анимация при наведении */
+    .icon-primary:hover,
+    .icon-danger:hover {
+        transform: scale(1.2);
+        transition: transform 0.2s, color 0.2s;
+    }
+
+.icon-primary:hover {
+    color: #0a58ca; /* Темнее при наведении */
+}
+
+.icon-danger:hover {
+    color: #b02a37; /* Темнее при наведении */
+}
+
+.rounded-search {
+    border-radius: 50px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    height: 40px !important;
+    transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+    .rounded-search:focus {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+        border-color: #0d6efd;
+    }
