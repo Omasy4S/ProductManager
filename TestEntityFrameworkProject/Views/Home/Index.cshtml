@@ -1,146 +1,218 @@
-﻿@model IEnumerable<TestEntityFrameworkProject.Models.Product>
+@model IEnumerable<TestEntityFrameworkProject.Models.Product>
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<!-- 📊 Блок статистики -->
-<div class="row mb-4">
+<!-- Блок статистики -->
+<div class="row g-3 mb-4">
     <div class="col-md-6 col-lg-3">
-        <div class="card text-white bg-primary">
+        <div class="card border-0 shadow-sm h-100" style="background-color: #f8f9fa; border-left: 4px solid #6c63ff !important;">
             <div class="card-body">
-                <h5 class="card-title">📦 Всего товаров</h5>
-                <h2 class="card-text">@ViewBag.Stats.TotalCount</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">Всего товаров</h6>
+                        <h2 class="card-title mb-0 fw-bold text-dark">@ViewBag.Stats.TotalCount</h2>
+                    </div>
+                    <i class="bi bi-box-seam text-primary" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-6 col-lg-3">
-        <div class="card text-white bg-warning">
+        <div class="card border-0 shadow-sm h-100" style="background-color: #fff5f5; border-left: 4px solid #ff6b6b !important;">
             <div class="card-body">
-                <h5 class="card-title">💰 Средняя цена</h5>
-                <h2 class="card-text">@ViewBag.Stats.AveragePrice.ToString("C")</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">Средняя цена</h6>
+                        <h2 class="card-title mb-0 fw-bold text-dark">@ViewBag.Stats.AveragePrice.ToString("C")</h2>
+                    </div>
+                    <i class="bi bi-cash-coin text-danger" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-6 col-lg-3">
-        <div class="card text-white bg-danger">
+        <div class="card border-0 shadow-sm h-100" style="background-color: #f0f8ff; border-left: 4px solid #4dabf7 !important;">
             <div class="card-body">
-                <h5 class="card-title">📈 Самый дорогой</h5>
-                <p class="card-text mb-1">@ViewBag.Stats.MostExpensiveName</p>
-                <h4>@ViewBag.Stats.MostExpensivePrice.ToString("C")</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">Самый дорогой</h6>
+                        <p class="mb-1 small text-muted">@ViewBag.Stats.MostExpensiveName</p>
+                        <h4 class="mb-0 fw-bold text-dark">@ViewBag.Stats.MostExpensivePrice.ToString("C")</h4>
+                    </div>
+                    <i class="bi bi-arrow-up-circle text-info" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-6 col-lg-3">
-            <div class="card text-white bg-success">
+        <div class="card border-0 shadow-sm h-100" style="background-color: #f0fff4; border-left: 4px solid #51cf66 !important;">
             <div class="card-body">
-                <h5 class="card-title">📉 Самый дешёвый</h5>
-                <p class="card-text mb-1">@ViewBag.Stats.CheapestName</p>
-                <h4>@ViewBag.Stats.CheapestPrice.ToString("C")</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">Самый дешёвый</h6>
+                        <p class="mb-1 small text-muted">@ViewBag.Stats.CheapestName</p>
+                        <h4 class="mb-0 fw-bold text-dark">@ViewBag.Stats.CheapestPrice.ToString("C")</h4>
+                    </div>
+                    <i class="bi bi-arrow-down-circle text-success" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Последний добавленный товар -->
-<div class="alert alert-info mb-4">
-    <strong>🕒 Последний добавленный товар:</strong> @ViewBag.Stats.LatestProductName
-    <br />
-    <small>Добавлен: @ViewBag.Stats.LatestProductDate.ToString("g")</small>
+<div class="alert alert-info border-0 shadow-sm mb-4" style="background-color: #e7f3ff; border-left: 4px solid #0d6efd !important;">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle-fill text-primary me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <strong>Последний добавленный товар:</strong> @ViewBag.Stats.LatestProductName
+            <br />
+            <small class="text-muted">Добавлен: @ViewBag.Stats.LatestProductDate.ToString("g")</small>
+        </div>
+    </div>
 </div>
+
+<!-- Сообщения об успехе/ошибке -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📦 Список продуктов</h2>
-    <a asp-action="Create" class="btn btn-success">Добавить новый</a>
+    <h2 class="mb-0">
+        <i class="bi bi-box-seam text-primary me-2"></i>Список продуктов
+    </h2>
+    <div>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i>Добавить новый
+        </a>
+    </div>
 </div>
 
-<!-- 🔍 Круглая поисковая строка -->
-<form asp-action="Index" method="get" class="mb-4 d-flex align-items-center">
-    <input type="text"
-           name="searchString"
-           value="@ViewData["CurrentFilter"]"
-           class="form-control me-2"
-           placeholder="Поиск по названию..."
-           style="border-radius: 50px; padding-left: 20px; padding-right: 20px; height: 40px; border: 1px solid #ced4da;" />
+<!-- Поисковая строка -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="d-flex align-items-center">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text"
+                       name="searchString"
+                       value="@ViewData["CurrentFilter"]"
+                       class="form-control border-start-0"
+                       placeholder="Поиск по названию или описанию..."
+                       style="border-left: none;" />
+            </div>
+            <button type="submit" class="btn btn-primary ms-2" style="width: 100px;">Поиск</button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2" title="Сбросить фильтр" style="width: 100px;">Сбросить</a>
+        </form>
+    </div>
+</div> 
 
-    <!-- Кнопка поиска -->
-    <button type="submit" class="btn btn-outline-secondary btn-sm" title="Поиск" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d6efd;">
-        <i class="bi bi-search"></i>
-    </button>
-
-    <!-- Кнопка сброса -->
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm ms-2" title="Сбросить фильтр" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #dc3545;">
-        <i class="bi bi-x-circle"></i>
-    </a>
-</form> 
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index"
-                   asp-route-sort="@(ViewBag.CurrentSort == "name_asc" ? "name_desc" : "name_asc")"
-                   asp-route-searchString="@ViewData["CurrentFilter"]">
-                    Название
-                    @if (ViewBag.CurrentSort == "name_asc")
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="border-0">
+                            <a asp-action="Index"
+                               asp-route-sort="@(ViewBag.CurrentSort == "name_asc" ? "name_desc" : "name_asc")"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-dark">
+                                Название
+                                @if (ViewBag.CurrentSort == "name_asc")
+                                {
+                                    <i class="bi bi-arrow-up"></i>
+                                }
+                                else if (ViewBag.CurrentSort == "name_desc")
+                                {
+                                    <i class="bi bi-arrow-down"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="border-0">Описание</th>
+                        <th class="border-0">
+                            <a asp-action="Index"
+                               asp-route-sort="@(ViewBag.CurrentSort == "price_asc" ? "price_desc" : "price_asc")"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-dark">
+                                Цена
+                                @if (ViewBag.CurrentSort == "price_asc")
+                                {
+                                    <i class="bi bi-arrow-up"></i>
+                                }
+                                else if (ViewBag.CurrentSort == "price_desc")
+                                {
+                                    <i class="bi bi-arrow-down"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="border-0">
+                            <a asp-action="Index"
+                               asp-route-sort="@(ViewBag.CurrentSort == "date_asc" ? "date_desc" : "date_asc")"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-dark">
+                                Добавлен
+                                @if (ViewBag.CurrentSort == "date_asc")
+                                {
+                                    <i class="bi bi-arrow-up"></i>
+                                }
+                                else if (ViewBag.CurrentSort == "date_desc")
+                                {
+                                    <i class="bi bi-arrow-down"></i>
+                                }
+                            </a>
+                        </th>
+                        <th class="border-0 text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        <span>▲</span>
+                        <tr>
+                            <td class="align-middle">
+                                <strong>@item.Name</strong>
+                            </td>
+                            <td class="align-middle">
+                                <span class="text-muted">@item.Description</span>
+                            </td>
+                            <td class="align-middle">
+                                <span class="badge bg-primary rounded-pill">@item.Price.ToString("C")</span>
+                            </td>
+                            <td class="align-middle">
+                                <small class="text-muted">@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                            </td>
+                            <td class="align-middle text-end">
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                    <form asp-action="Delete" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить этот продукт?')">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     }
-                    @if (ViewBag.CurrentSort == "name_desc")
-                    {
-                        <span>▼</span>
-                    }
-                </a>
-            </th>
-            <th>Описание</th>
-            <th>
-                <a asp-action="Index"
-                   asp-route-sort="@(ViewBag.CurrentSort == "price_asc" ? "price_desc" : "price_asc")"
-                   asp-route-searchString="@ViewData["CurrentFilter"]">
-                    Цена
-                    @if (ViewBag.CurrentSort == "price_asc")
-                    {
-                        <span>▲</span>
-                    }
-                    @if (ViewBag.CurrentSort == "price_desc")
-                    {
-                        <span>▼</span>
-                    }
-                </a>
-            </th>
-            <th>
-                <a asp-action="Index"
-                   asp-route-sort="@(ViewBag.CurrentSort == "date_asc" ? "date_desc" : "date_asc")"
-                   asp-route-searchString="@ViewData["CurrentFilter"]">
-                    Добавлен
-                    @if (ViewBag.CurrentSort == "date_asc")
-                    {
-                        <span>▲</span>
-                    }
-                    @if (ViewBag.CurrentSort == "date_desc")
-                    {
-                        <span>▼</span>
-                    }
-                </a>
-            </th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.Price?.ToString("C")</td>
-                <td>@item.CreatedAt.ToString("g")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Редактировать</a>
-                    <form asp-action="Delete" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить?')">🗑️ Удалить</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

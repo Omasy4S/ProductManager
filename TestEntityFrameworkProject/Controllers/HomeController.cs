@@ -1,109 +1,119 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TestEntityFrameworkProject.Data;
 using TestEntityFrameworkProject.Models;
 
 namespace TestEntityFrameworkProject.Controllers
 {
+    /// <summary>
+    /// Контроллер для управления продуктами
+    /// </summary>
     public class HomeController : Controller
     {
-        private readonly AppDbContext context;
+        private readonly AppDbContext _context;
 
-        public HomeController(AppDbContext Сontext)
+        /// <summary>
+        /// Конструктор с внедрением зависимости контекста базы данных
+        /// </summary>
+        public HomeController(AppDbContext context)
         {
-            context = Сontext;
+            _context = context;
         }
 
-        public IActionResult Index(string searchString, string sort)
+        /// <summary>
+        /// Главная страница со списком продуктов, поиском и сортировкой
+        /// </summary>
+        /// <param name="searchString">Строка поиска по названию или описанию</param>
+        /// <param name="sort">Параметр сортировки</param>
+        public async Task<IActionResult> Index(string searchString, string sort)
         {
-            var query = context.Products.ToList();
+            // Начинаем с IQueryable для отложенного выполнения запроса
+            IQueryable<Product> query = _context.Products;
 
+            // Применяем фильтр поиска на уровне БД
             if (!string.IsNullOrEmpty(searchString))
             {
-                // Ищем по названию ИЛИ по описанию если товаров <1000, если их больше нужно использовать более производительные способы
-                query = query.Where(p => p.Name.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                         p.Description.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-                ViewData["CurrentFilter"] = searchString; // Передаём значение обратно в View
+                query = query.Where(p => EF.Functions.Like(p.Name, $"%{searchString}%") ||
+                                        EF.Functions.Like(p.Description, $"%{searchString}%"));
+                ViewData["CurrentFilter"] = searchString;
             }
             
-            // 🔄 Сортировка
+            // Применяем сортировку на уровне БД (для совместимости с SQLite decimal конвертируем в double)
             ViewBag.CurrentSort = sort;
-            switch (sort)
+            query = sort switch
             {
-                case "name_desc":
-                    query = query.OrderByDescending(p => p.Name).ToList();
-                    break;
-                case "price_asc":
-                    query = query.OrderBy(p => p.Price).ToList();
-                    break;
-                case "price_desc":
-                    query = query.OrderByDescending(p => p.Price).ToList();
-                    break;
-                case "date_asc":
-                    query = query.OrderBy(p => p.CreatedAt).ToList();
-                    break;
-                case "date_desc":
-                    query = query.OrderByDescending(p => p.CreatedAt).ToList();
-                    break;
-                default: // name_asc
-                    query = query.OrderBy(p => p.Name).ToList();
-                    break;
-            }
-
-            var products = query.ToList();
-
-            // 📊 Вычисляем статистику
-            var stats = new ProductStatsViewModel
-            {
-                TotalCount = products.Count,
-                AveragePrice = (decimal)(products.Any() ? products.Average(p => p.Price) : 0),
-                LatestProductDate = products.Any() ? products.Max(p => p.CreatedAt) : DateTime.MinValue
+                "name_desc" => query.OrderByDescending(p => p.Name),
+                "price_asc" => query.OrderBy(p => (double)p.Price),
+                "price_desc" => query.OrderByDescending(p => (double)p.Price),
+                "date_asc" => query.OrderBy(p => p.CreatedAt),
+                "date_desc" => query.OrderByDescending(p => p.CreatedAt),
+                _ => query.OrderBy(p => p.Name) // По умолчанию сортируем по имени (A-Z)
             };
 
+            // Выполняем запрос асинхронно один раз
+            var products = await query.ToListAsync();
+
+            // Вычисляем статистику оптимизированным способом
+            var stats = new ProductStatsViewModel();
+            
             if (products.Any())
             {
-                var mostExpensive = products.OrderByDescending(p => p.Price).First();
-                stats.MostExpensiveName = mostExpensive.Name;
-                stats.MostExpensivePrice = (decimal)mostExpensive.Price;
-
-                var cheapest = products.OrderBy(p => p.Price).First();
+                stats.TotalCount = products.Count;
+                stats.AveragePrice = products.Average(p => p.Price);
+                
+                var orderedByPrice = products.OrderBy(p => p.Price).ToList();
+                var cheapest = orderedByPrice.First();
+                var mostExpensive = orderedByPrice.Last();
+                
                 stats.CheapestName = cheapest.Name;
-                stats.CheapestPrice = (decimal)cheapest.Price;
-
+                stats.CheapestPrice = cheapest.Price;
+                stats.MostExpensiveName = mostExpensive.Name;
+                stats.MostExpensivePrice = mostExpensive.Price;
+                
                 var latest = products.OrderByDescending(p => p.CreatedAt).First();
                 stats.LatestProductName = latest.Name;
+                stats.LatestProductDate = latest.CreatedAt;
             }
 
-            // Передаём статистику в View через ViewBag
             ViewBag.Stats = stats;
-
             return View(products);
         }
 
+        /// <summary>
+        /// Отображение формы создания нового продукта
+        /// </summary>
         [HttpGet]
         public IActionResult Create() => View();
 
+        /// <summary>
+        /// Создание нового продукта
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product product)
+        public async Task<IActionResult> Create(Product product)
         {
             if (ModelState.IsValid)
             {
-                context.Products.Add(product);
-                context.SaveChanges();
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "✅ Продукт успешно создан!";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
         }
 
+        /// <summary>
+        /// Отображение формы редактирования продукта
+        /// </summary>
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = context.Products.Find(id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -112,9 +122,12 @@ namespace TestEntityFrameworkProject.Controllers
             return View(product);
         }
 
+        /// <summary>
+        /// Сохранение изменений продукта
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Product product)
+        public async Task<IActionResult> Edit(int id, Product product)
         {
             if (id != product.Id)
             {
@@ -125,10 +138,18 @@ namespace TestEntityFrameworkProject.Controllers
             {
                 try
                 {
-                    context.Update(product);
-                    context.SaveChanges();
-                    TempData["SuccessMessage"] = "✅ Товар успешно обновлён!";
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "✅ Продукт успешно обновлён!";
                     return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await ProductExists(product.Id))
+                    {
+                        return NotFound();
+                    }
+                    ModelState.AddModelError("", "Произошла ошибка конкурентности. Попробуйте снова.");
                 }
                 catch (Exception)
                 {
@@ -139,16 +160,29 @@ namespace TestEntityFrameworkProject.Controllers
             return View(product);
         }
 
+        /// <summary>
+        /// Удаление продукта
+        /// </summary>
         [HttpPost]
-        public IActionResult Delete(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            var product = context.Products.Find(id);
+            var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
-                context.Products.Remove(product);
-                context.SaveChanges();
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "✅ Продукт успешно удалён!";
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// Проверка существования продукта
+        /// </summary>
+        private async Task<bool> ProductExists(int id)
+        {
+            return await _context.Products.AnyAsync(e => e.Id == id);
         }
     }
 }
